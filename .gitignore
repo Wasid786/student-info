@@ -33,3 +33,5 @@ go-workspace/
 .gopath/
 
 storage
+/config
+
