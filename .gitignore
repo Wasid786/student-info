@@ -1,0 +1,35 @@
+
+# Ignore Go binary files
+/bin/
+/obj/
+/*.exe
+/*.exe~
+/*.dll
+/*.so
+/*.dylib
+
+# Ignore vendor directories
+/vendor/
+
+# Ignore Go test binary
+*.test
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore Go module files (if you're using Go modules)
+go.sum
+go.mod
+
+# Ignore coverage reports
+*.out
+*.coverprofile
+
+# Ignore local Go workspace
+go-workspace/
+
+# Ignore dependency lock files for Go modules (optional)
+.gopath/
+
+storage
