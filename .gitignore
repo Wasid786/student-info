@@ -32,6 +32,6 @@ go-workspace/
 # Ignore dependency lock files for Go modules (optional)
 .gopath/
 
-storage
+/storage
 /config
 
