@@ -33,15 +33,15 @@ func New(cfg config.Config) (*Sqlite, error) {
 	}, nil
 }
 
-func (s *Sqlite) CreateStudent(name string, email string, age int) (int64, error) {
+func (s *Sqlite) CreateStudent(name string, age int, email string) (int64, error) {
 
-	stmt, err := s.Db.Prepare("INSERT INTO students (name, email, age) VALUES(?,?,?)")
+	stmt, err := s.Db.Prepare("INSERT INTO students (name, age,email) VALUES(?,?,?)")
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(name, email, age)
+	result, err := stmt.Exec(name, age, email)
 	if err != nil {
 		return 0, err
 	}
@@ -71,4 +71,34 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
 	}
 
 	return student, nil
+}
+
+func (s *Sqlite) GetStudents() ([]types.Student, error) {
+	stmt, err := s.Db.Prepare("SELECT * FROM students")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var students []types.Student
+
+	for rows.Next() {
+		var student types.Student
+
+		err := rows.Scan(&student.Id, &student.Name, &student.Age, &student.Email)
+
+		if err != nil {
+			return nil, err
+		}
+		students = append(students, student)
+
+	}
+	return students, nil
 }

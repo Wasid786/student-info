@@ -37,8 +37,8 @@ func New(storage storage.Storage) http.HandlerFunc {
 
 		lastId, err := storage.CreateStudent(
 			student.Name,
-			student.Email,
 			student.Age,
+			student.Email,
 		)
 		slog.Info("user created successfully ", slog.String("userId", fmt.Sprint(lastId)))
 
@@ -61,8 +61,7 @@ func GetById(storage storage.Storage) http.HandlerFunc {
 
 		intId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
-			slog.Error("Invalid student ID", slog.String("id", id), slog.String("error", err.Error()))
-			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(fmt.Errorf("invalid student ID: %s", id)))
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
 			return
 		}
 
@@ -70,14 +69,27 @@ func GetById(storage storage.Storage) http.HandlerFunc {
 		if err != nil {
 			// Assuming storage.ErrNotFound is used for "not found"
 			slog.Warn("Student not found", slog.String("id", id))
-			response.WriteJson(w, http.StatusNotFound, response.GeneralError(fmt.Errorf("student with ID %d not found", intId)))
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(fmt.Errorf("student with ID %d not found", intId)))
+
 			return
 
-			// Handle other errors
-			slog.Error("Error retrieving student", slog.String("id", id), slog.String("error", err.Error()))
-			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-			return
 		}
 		response.WriteJson(w, http.StatusOK, student)
+	}
+}
+
+func GetList(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		slog.Info("Getting all Students ")
+
+		students, err := storage.GetStudents()
+
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, err)
+			return
+		}
+		response.WriteJson(w, http.StatusOK, students)
+
 	}
 }
